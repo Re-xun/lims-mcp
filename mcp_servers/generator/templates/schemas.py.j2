@@ -1,0 +1,20 @@
+"""Pydantic schemas for {{ domain_name }} MCP - Auto-generated.
+
+DO NOT EDIT MANUALLY. Run `python -m mcp_servers.generator.generate` to regenerate.
+"""
+from pydantic import BaseModel, Field
+from typing import Optional
+
+{% for schema in schemas %}
+class {{ schema.class_name }}(BaseModel):
+    """{{ schema.description }}"""
+{% for field in schema.fields %}
+    {{ field.name }}: {{ field.type_hint }} = Field(
+{% if field.default is not none %}
+        default={{ field.default }},
+{% endif %}
+        description="{{ field.description | replace('"', '\\"') }}"
+    )
+{% endfor %}
+
+{% endfor %}

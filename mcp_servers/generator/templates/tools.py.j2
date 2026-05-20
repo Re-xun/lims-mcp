@@ -1,0 +1,53 @@
+"""Auto-generated tools for {{ domain_name }} MCP.
+
+DO NOT EDIT MANUALLY. Run `python -m mcp_servers.generator.generate` to regenerate.
+"""
+import os
+import httpx
+
+JAVA_API_BASE = os.environ.get("JAVA_API_BASE", "http://localhost:8080")
+
+{% for tool in tools %}
+async def {{ tool.function_name }}(
+{%- for p in tool.params %}
+    {{ p.name }}: {{ p.type_hint }},
+{%- endfor %}
+    token: str,
+) -> dict:
+    """{{ tool.description }}"""
+    url = f"{JAVA_API_BASE}{{ tool.path_fstring }}"
+{% if tool.params %}
+    params = {
+{%- for p in tool.params %}
+        "{{ p.original_name }}": {{ p.name }},
+{%- endfor %}
+    }
+{% endif %}
+    async with httpx.AsyncClient() as client:
+        response = await client.{{ tool.http_method }}(
+            url,
+            headers={"x-access-token": token},
+{% if tool.params %}
+            params=params,
+{% endif %}
+        )
+        response.raise_for_status()
+        return response.json()
+
+{% endfor %}
+
+TOOL_HANDLERS = {
+{%- for tool in tools %}
+    "{{ tool.function_name }}": {{ tool.function_name }},
+{%- endfor %}
+}
+
+TOOL_SCHEMAS = [
+{%- for tool in tools %}
+    {
+        "name": "{{ tool.function_name }}",
+        "description": "{{ tool.description | replace('"', '\\"') }}",
+        "inputSchema": {{ tool.input_schema_json }},
+    },
+{%- endfor %}
+]
