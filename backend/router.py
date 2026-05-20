@@ -30,10 +30,10 @@ DOMAIN_REGISTRY: dict[str, DomainConfig] = {
         mcp_args=["-m", "mcp_servers.customer_mcp.server"],
     ),
     "project_mcp": DomainConfig(
-        name="project_mcp",
-        description="项目查询、委托单查询、安全项目、EMC项目、产值统计、工程师提成",
-        keywords=["项目", "委托", "委托单", "project", "安全项目", "EMC", "产值", "提成", "结案", "交付"],
-        mcp_args=["-m", "mcp_servers.project_mcp.server"],
+        name="dm_project_mcp",
+        description="案件查询、项目查询、委托单查询、安全项目、EMC项目、产值统计、工程师提成",
+        keywords=["案件", "项目", "委托", "委托单", "project", "安全项目", "EMC", "产值", "提成", "结案", "交付"],
+        mcp_args=["-m", "mcp_servers.dm_project_mcp.server"],
     ),
     "sales_order_mcp": DomainConfig(
         name="sales_order_mcp",
@@ -68,6 +68,8 @@ def _build_classifier() -> ChatOpenAI:
 
 async def _classify(user_message: str) -> list[str]:
     """LLM intent classification → list of domain names (max 2)."""
+    from .agent import _extract_token_usage, _log_usage
+
     domain_desc = "\n".join(
         f"- {name}: {cfg.description}" for name, cfg in DOMAIN_REGISTRY.items()
     )
@@ -76,6 +78,7 @@ async def _classify(user_message: str) -> list[str]:
         SystemMessage(content=_ROUTER_SYSTEM),
         HumanMessage(content=f"可用域:\n{domain_desc}\n\n用户消息: {user_message}"),
     ])
+    _log_usage("Step2-路由分类", _extract_token_usage(response))
     text = response.content.strip()
     # Extract JSON array from optional markdown fences
     start = text.find("[")

@@ -1,7 +1,10 @@
-"""project_mcp MCP Server — 项目/委托单查询."""
+"""dm_project_mcp MCP Server — 案件查询."""
+from __future__ import annotations
+
 import sys
 import json
 import logging
+from typing import Optional
 
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
@@ -10,9 +13,9 @@ from mcp.types import Tool, TextContent
 from .tools import TOOL_HANDLERS, TOOL_SCHEMAS
 
 logger = logging.getLogger(__name__)
-server = Server("project_mcp")
+server = Server("dm_project_mcp")
 
-TOKEN: str | None = None
+TOKEN: Optional[str] = None
 for i, arg in enumerate(sys.argv):
     if arg == "--token" and i + 1 < len(sys.argv):
         TOKEN = sys.argv[i + 1]
