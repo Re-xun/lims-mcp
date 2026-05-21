@@ -15,6 +15,14 @@ mcp_server/
 dist/
 build/
 
+# Original app (not needed for MCP)
+backend/
+frontend/
+openapi_specs/
+docs/
+docker-compose.yml
+Dockerfile
+
 # OS
 .DS_Store
 Thumbs.db
