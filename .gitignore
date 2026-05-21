@@ -14,6 +14,7 @@ __pycache__/
 mcp_server/
 dist/
 build/
+*.spec
 
 # Original app (not needed for MCP)
 backend/
