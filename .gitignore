@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+
+# Sensitive credentials
+.env
+
+# IDE / Claude local config
+.claude/
+
+# Build artifacts
+*.zip
+mcp_server/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
