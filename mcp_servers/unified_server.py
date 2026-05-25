@@ -56,6 +56,7 @@ from mcp.types import Tool, TextContent
 from mcp_servers.customer_mcp.tools import TOOL_HANDLERS as C_H, TOOL_SCHEMAS as C_S
 from mcp_servers.sales_order_mcp.tools import TOOL_HANDLERS as S_H, TOOL_SCHEMAS as S_S
 from mcp_servers.dm_project_mcp.tools import TOOL_HANDLERS as P_H, TOOL_SCHEMAS as P_S
+from mcp_servers.is_workbench_mcp.tools import TOOL_HANDLERS as I_H, TOOL_SCHEMAS as I_S
 from mcp_servers.user_mcp.tools import TOOL_HANDLERS as U_H, TOOL_SCHEMAS as U_S
 
 TOKEN_ENV = "LIMS_TOKEN"
@@ -180,7 +181,7 @@ _tool_descriptions: dict[str, str] = {
     "login": "登录 LIMS 系统，获取认证 token。没有 token 时必须先调用此工具。token 会缓存到内存中，后续查询自动使用。",
 }
 
-for schemas, handlers in [(C_S, C_H), (S_S, S_H), (P_S, P_H), (U_S, U_H)]:
+for schemas, handlers in [(C_S, C_H), (S_S, S_H), (P_S, P_H), (I_S, I_H), (U_S, U_H)]:
     for s in schemas:
         name = s["name"]
         _registry[name] = handlers[name]

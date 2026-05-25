@@ -1,0 +1,1 @@
+"""OpenAPI -> MCP generator package."""

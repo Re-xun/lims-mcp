@@ -24,7 +24,6 @@ _FILTER_CONFIG: dict[str, tuple[str, str]] = {
     "create_on_end":              ("ac.createOn",             "<= '{value}'"),
 }
 
-
 async def query_customer_list(
     token: str,
     # ── pagination ──
