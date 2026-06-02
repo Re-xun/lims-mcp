@@ -10,10 +10,17 @@ Auth:
   or call the `login` tool manually.  Token is cached in-memory.
 
 Domains & tools:
+  abd_customer_contact_mcp → query_customer_contact_list
+  dc_project_mcp    → query_dc_project_list
+  sd_service_item_mcp → query_sdserviceitemlistaction
+  sd_temp_test_service_item_mcp → query_sdtemptestserviceitemlistaction
   customer_mcp      → query_customer_list
   sales_order_mcp   → query_sales_order_list, query_sales_order_by_id
   dm_project_mcp    → query_project_list, query_project_by_id, query_project_my_all,
                        query_project_unassigned, query_project_for_app
+  pur_purchase_mcp  → query_purpurchaselistaction
+  fin_cas_payment_apply_mcp → query_fincaspaymentapplylistaction
+  fin_cas_reversing_mcp → query_fincasreversinglistaction
   user_mcp          → get_user_by_id, search_users, list_departments
   (built-in)        → login
 """
@@ -53,10 +60,33 @@ from mcp.server import Server
 from mcp.server.stdio import stdio_server
 from mcp.types import Tool, TextContent
 
+from mcp_servers.abd_customer_contact_mcp.tools import TOOL_HANDLERS as ACC_H, TOOL_SCHEMAS as ACC_S
+from mcp_servers.abdsupplier_mcp.tools import TOOL_HANDLERS as SUP_H, TOOL_SCHEMAS as SUP_S
 from mcp_servers.customer_mcp.tools import TOOL_HANDLERS as C_H, TOOL_SCHEMAS as C_S
-from mcp_servers.sales_order_mcp.tools import TOOL_HANDLERS as S_H, TOOL_SCHEMAS as S_S
+from mcp_servers.dc_project_mcp.tools import TOOL_HANDLERS as DCP_H, TOOL_SCHEMAS as DCP_S
+from mcp_servers.sd_sales_order_mcp.tools import TOOL_HANDLERS as S_H, TOOL_SCHEMAS as S_S
 from mcp_servers.dm_project_mcp.tools import TOOL_HANDLERS as P_H, TOOL_SCHEMAS as P_S
+from mcp_servers.dm_test_charge_mcp.tools import TOOL_HANDLERS as DTC_H, TOOL_SCHEMAS as DTC_S
+from mcp_servers.dmtestcharge_temporary_mcp.tools import TOOL_HANDLERS as DTCT_H, TOOL_SCHEMAS as DTCT_S
+from mcp_servers.emc_mcp.tools import TOOL_HANDLERS as E_H, TOOL_SCHEMAS as E_S
+from mcp_servers.emc_temporary_test_mcp.tools import TOOL_HANDLERS as ETT_H, TOOL_SCHEMAS as ETT_S
+from mcp_servers.fin_expense_apply_mcp.tools import TOOL_HANDLERS as FEA_H, TOOL_SCHEMAS as FEA_S
+from mcp_servers.fin_cas_reversing_mcp.tools import TOOL_HANDLERS as FCR_H, TOOL_SCHEMAS as FCR_S
+from mcp_servers.fin_ar_invoice_mcp.tools import TOOL_HANDLERS as FAI_H, TOOL_SCHEMAS as FAI_S
+from mcp_servers.fin_receiving_notice_mcp.tools import TOOL_HANDLERS as FRN_H, TOOL_SCHEMAS as FRN_S
 from mcp_servers.is_workbench_mcp.tools import TOOL_HANDLERS as I_H, TOOL_SCHEMAS as I_S
+from mcp_servers.my_fin_cas_receiving_mcp.tools import TOOL_HANDLERS as MFCR_H, TOOL_SCHEMAS as MFCR_S
+from mcp_servers.ps_activity_mcp.tools import TOOL_HANDLERS as A_H, TOOL_SCHEMAS as A_S
+from mcp_servers.ps_plan_mcp.tools import TOOL_HANDLERS as PL_H, TOOL_SCHEMAS as PL_S
+from mcp_servers.ps_opportunity_mcp.tools import TOOL_HANDLERS as O_H, TOOL_SCHEMAS as O_S
+from mcp_servers.pur_request_mcp.tools import TOOL_HANDLERS as PR_H, TOOL_SCHEMAS as PR_S
+from mcp_servers.pur_outgoing_mcp.tools import TOOL_HANDLERS as PO_H, TOOL_SCHEMAS as PO_S
+from mcp_servers.pur_purchase_mcp.tools import TOOL_HANDLERS as PP_H, TOOL_SCHEMAS as PP_S
+from mcp_servers.quotation_mcp.tools import TOOL_HANDLERS as Q_H, TOOL_SCHEMAS as Q_S
+from mcp_servers.sd_invoice_request_mcp.tools import TOOL_HANDLERS as SIR_H, TOOL_SCHEMAS as SIR_S
+from mcp_servers.sd_service_item_mcp.tools import TOOL_HANDLERS as SSI_H, TOOL_SCHEMAS as SSI_S
+from mcp_servers.sd_temp_test_service_item_mcp.tools import TOOL_HANDLERS as STTSI_H, TOOL_SCHEMAS as STTSI_S
+from mcp_servers.fin_cas_payment_apply_mcp.tools import TOOL_HANDLERS as FCPA_H, TOOL_SCHEMAS as FCPA_S
 from mcp_servers.user_mcp.tools import TOOL_HANDLERS as U_H, TOOL_SCHEMAS as U_S
 
 TOKEN_ENV = "LIMS_TOKEN"
@@ -119,6 +149,7 @@ def _map_arguments(arguments: dict, handler) -> dict:
     """Map MCP tool arguments to handler parameter names."""
     params = inspect.signature(handler).parameters
     mapped: dict[str, object] = {}
+    accepts_kwargs = any(p.kind == inspect.Parameter.VAR_KEYWORD for p in params.values())
 
     for key, value in arguments.items():
         if key in params and key != "token":
@@ -128,6 +159,11 @@ def _map_arguments(arguments: dict, handler) -> dict:
         snake = _camel_to_snake(key)
         if snake != key and snake in params and snake not in mapped:
             mapped[snake] = value
+
+    if accepts_kwargs:
+        for key, value in arguments.items():
+            if key != "token" and key not in mapped:
+                mapped[key] = value
 
     return mapped
 
@@ -181,7 +217,7 @@ _tool_descriptions: dict[str, str] = {
     "login": "登录 LIMS 系统，获取认证 token。没有 token 时必须先调用此工具。token 会缓存到内存中，后续查询自动使用。",
 }
 
-for schemas, handlers in [(C_S, C_H), (S_S, S_H), (P_S, P_H), (I_S, I_H), (U_S, U_H)]:
+for schemas, handlers in [(ACC_S, ACC_H), (SUP_S, SUP_H), (C_S, C_H), (DCP_S, DCP_H), (S_S, S_H), (P_S, P_H), (DTC_S, DTC_H), (E_S, E_H), (ETT_S, ETT_H), (FEA_S, FEA_H), (FCR_S, FCR_H), (FCPA_S, FCPA_H), (FAI_S, FAI_H), (FRN_S, FRN_H), (I_S, I_H), (MFCR_S, MFCR_H), (A_S, A_H), (PL_S, PL_H), (O_S, O_H), (PR_S, PR_H), (PO_S, PO_H), (PP_S, PP_H), (Q_S, Q_H), (SIR_S, SIR_H), (SSI_S, SSI_H), (STTSI_S, STTSI_H), (U_S, U_H), (DTCT_S, DTCT_H)]:
     for s in schemas:
         name = s["name"]
         _registry[name] = handlers[name]
