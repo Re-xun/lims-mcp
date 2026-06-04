@@ -18,7 +18,7 @@
 ### 1. 环境要求
 
 - Python >= 3.10
-- 可访问 LIMS Java API（默认 `https://dev.metalims.cn/server`）
+- 可访问 LIMS Java API（默认 `....`）
 
 ### 2. 安装依赖
 
@@ -37,7 +37,7 @@ cp .env.example .env
 编辑 `.env`：
 
 ```env
-JAVA_API_BASE=https://dev.metalims.cn/server
+JAVA_API_BASE=...
 LIMS_USERNAME=你的工号
 LIMS_PASSWORD=你的密码
 ```
@@ -84,7 +84,7 @@ USE_NEW_MCP=1 python -m new_mcp_servers.unified_server
 [mcp_servers.lims-unified]
 command = "python"
 args = ["-m", "new_mcp_servers.unified_server"]
-env = { USE_NEW_MCP = "1", JAVA_API_BASE = "https://dev.metalims.cn/server", LIMS_USERNAME = "你的工号", LIMS_PASSWORD = "你的密码" }
+env = { USE_NEW_MCP = "1", JAVA_API_BASE = "....", LIMS_USERNAME = "你的工号", LIMS_PASSWORD = "你的密码" }
 ```
 
 或者使用 JSON 格式（`~/.codex/config.json`）：
@@ -97,7 +97,7 @@ env = { USE_NEW_MCP = "1", JAVA_API_BASE = "https://dev.metalims.cn/server", LIM
       "args": ["-m", "new_mcp_servers.unified_server"],
       "env": {
         "USE_NEW_MCP": "1",
-        "JAVA_API_BASE": "https://dev.metalims.cn/server",
+        "JAVA_API_BASE": "....",
         "LIMS_USERNAME": "你的工号",
         "LIMS_PASSWORD": "你的密码"
       }
@@ -118,7 +118,7 @@ env = { USE_NEW_MCP = "1", JAVA_API_BASE = "https://dev.metalims.cn/server", LIM
       "args": ["-m", "new_mcp_servers.unified_server"],
       "env": {
         "USE_NEW_MCP": "1",
-        "JAVA_API_BASE": "https://dev.metalims.cn/server",
+        "JAVA_API_BASE": "....",
         "LIMS_USERNAME": "你的工号",
         "LIMS_PASSWORD": "你的密码"
       }
