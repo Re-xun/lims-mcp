@@ -1,0 +1,62 @@
+"""Module config: 收款记录 (MyFinCasReceivingListAction)"""
+from __future__ import annotations
+from new_mcp_servers.core.config import EnumField, FieldLabel, FilterDef, ModuleConfig
+
+_BASE_PATH = "/MyFinCasReceivingListAction"
+
+my_fin_cas_receiving = ModuleConfig(
+    name="query_myfincasreceivinglistaction",
+    display_name="我的收款记录",
+    description="查询我的收款记录列表。",
+    endpoint=_BASE_PATH + "/listQuery",
+    scope_endpoints={"default": _BASE_PATH + "/listQuery"},
+    extra_params=["include_raw"],
+    filters=[
+        FilterDef("bstatus", "sso.bstatus", "合同状态", "="),
+        FilterDef("contract_no", "sso.sales_order_no", "合同编号", "like"),
+        FilterDef("customer_name", "ac.CUSTOMER_NAME_CN", "客户名称", "like"),
+        FilterDef("fast_search", "fastSearch", "快速搜索", "like"),
+        FilterDef("order_no", "orderNo", "收款记录编号", "like"),
+        FilterDef("payment_company", "fcr.payment_company", "付款公司", "like"),
+        FilterDef("person_name", "ap.PERSON_NAME", "负责销售", "like"),
+        FilterDef("received_date_start", "fcr.received_date", "收款日期起", ">=", is_date_range=True),
+        FilterDef("received_date_end", "fcr.received_date", "收款日期止", "<=", is_date_range=True),
+        FilterDef("receiving_date_enums", "receivingDateEnums", "日期快捷", "="),
+        FilterDef("rstatus", "fcr.rstatus", "状态", "="),
+        FilterDef("bank_name", "bankName", "收款银行", "like"),
+        FilterDef("bill_type_id", "billTypeId", "收款类型", "="),
+        FilterDef("customer_name_cn", "customerNameCn", "客户名称(候选)", "like"),
+        FilterDef("receiving_phase", "receivingPhase", "期次", "="),
+        FilterDef("sales_order_bstatus", "salesOrderBstatus", "合同状态(候选)", "="),
+        FilterDef("sales_order_invoiced_amt", "salesOrderInvoicedAmt", "已开票金额", "like"),
+        FilterDef("sales_order_no", "salesOrderNo", "合同编号(候选)", "like"),
+        FilterDef("sales_order_uninvoiced_amt", "salesOrderUninvoicedAmt", "剩余应开票金额", "like"),
+        FilterDef("sso_amt_with_tax_local", "ssoAmtWithTaxLocal", "合同金额", "like"),
+        FilterDef("sso_receivable_amt_local", "ssoReceivableAmtLocal", "剩余应收金额", "like"),
+        FilterDef("sso_received_amt_local", "ssoReceivedAmtLocal", "已收金额", "like"),
+    ],
+    field_labels={
+        "orderNo": FieldLabel("order_no", "收款记录编号"),
+        "receivedDate": FieldLabel("received_date", "收款日期"),
+        "receivingPhase": FieldLabel("receiving_phase", "期次"),
+        "salesOrderNo": FieldLabel("sales_order_no", "合同编号"),
+        "customerNameCn": FieldLabel("customer_name_cn", "客户名称"),
+        "paymentCompany": FieldLabel("payment_company", "付款公司"),
+        "salesOrderBstatus": FieldLabel("sales_order_bstatus", "合同状态"),
+        "billTypeId": FieldLabel("bill_type_id", "收款类型"),
+        "personName": FieldLabel("person_name", "负责销售"),
+        "ssoAmtWithTaxLocal": FieldLabel("sso_amt_with_tax_local", "合同金额"),
+        "ssoReceivedAmtLocal": FieldLabel("sso_received_amt_local", "已收金额"),
+        "ssoReceivableAmtLocal": FieldLabel("sso_receivable_amt_local", "剩余应收金额"),
+        "salesOrderInvoicedAmt": FieldLabel("sales_order_invoiced_amt", "已开票金额"),
+        "salesOrderUninvoicedAmt": FieldLabel("sales_order_uninvoiced_amt", "剩余应开票金额"),
+        "bankName": FieldLabel("bank_name", "收款银行"),
+        "rstatus": FieldLabel("rstatus", "状态"),
+    },
+    enum_fields={
+        "bill_type_id": EnumField({"FCR01-01": "有合同收款", "FCR02-01": "认领收款", "FCR02-02": "无合同收款"}),
+        "receiving_phase": EnumField({1: "预付款", 2: "尾款"}),
+        "rstatus": EnumField({0: "已作废", 1: "已审核", 2: "暂存", 3: "等待重新审批", 4: "审批中"}),
+        "sales_order_bstatus": EnumField({20: "未开案", 30: "案件进行中"}),
+    },
+)

@@ -1,0 +1,72 @@
+"""Module config: 免单记录 (DmTestChargeItemFreeListAction)"""
+from __future__ import annotations
+from new_mcp_servers.core.config import EnumField, FieldLabel, FilterDef, ModuleConfig
+
+_BASE_PATH = "/DmTestChargeItemFreeListAction"
+
+dm_test_charge_item_free = ModuleConfig(
+    name="query_dmtestchargeitemfreelistaction",
+    display_name="免单记录",
+    description="查询免单记录列表。",
+    endpoint=_BASE_PATH + "/listQuery",
+    scope_endpoints={
+        "default": _BASE_PATH + "/listQuery",
+        "my": _BASE_PATH + "/listQuery",
+    },
+    scope_svars={
+        "default": {"modularType": "modularType", "operation": "operation"},
+        "my": {"modularType": "modularType", "operation": "My"},
+    },
+    extra_params=["include_raw"],
+    filters=[
+        FilterDef("approve_date_end", "dtcf.approve_date", "审批日期止", "<=", is_date_range=True),
+        FilterDef("approve_date_start", "dtcf.approve_date", "审批日期起", ">=", is_date_range=True),
+        FilterDef("charge_no", "dtc.charge_no", "收费单编号", "like"),
+        FilterDef("customer_name_cn", "ac.CUSTOMER_NAME_CN", "客户名称", "like"),
+        FilterDef("department_name", "ad.department_name", "部门", "="),
+        FilterDef("fast_search", "fastSearch", "快速搜索", "like"),
+        FilterDef("person_name", "ap.PERSON_NAME", "负责人", "like"),
+        FilterDef("test_charge_free_no", "dtcf.test_charge_free_no", "免单申请编号", "like"),
+        FilterDef("test_requirement", "etp.test_requirement", "试验类型", "like"),
+        FilterDef("apply_date_end", "applyDate", "申请日期止", "<=", is_date_range=True),
+        FilterDef("apply_date_start", "applyDate", "申请日期起", ">=", is_date_range=True),
+        FilterDef("approver_name", "approverName", "审批人", "like"),
+        FilterDef("free_duration", "freeDuration", "免单时长", "="),
+        FilterDef("free_reason", "freeReason", "免单原因", "like"),
+        FilterDef("free_rstatus", "freeRstatus", "免单状态", "=",
+                  enums={1: "有效免单", 2: "拒绝"}),
+        FilterDef("location_name", "locationName", "场地", "like"),
+        FilterDef("plan_end_date_end", "planEndDate", "计划结束日期止", "<=", is_date_range=True),
+        FilterDef("plan_end_date_start", "planEndDate", "计划结束日期起", ">=", is_date_range=True),
+        FilterDef("plan_start_date_end", "planStartDate", "计划开始日期止", "<=", is_date_range=True),
+        FilterDef("plan_start_date_start", "planStartDate", "计划开始日期起", ">=", is_date_range=True),
+        FilterDef("project_no", "projectNo", "案件号", "like"),
+        FilterDef("remark", "remark", "备注", "like"),
+        FilterDef("sales_order_no", "salesOrderNo", "销售合同号", "like"),
+        FilterDef("test_item_name", "testItemName", "测试项目", "like"),
+    ],
+    field_labels={
+        "testChargeFreeNo": FieldLabel("test_charge_free_no", "免单申请编号"),
+        "chargeNo": FieldLabel("charge_no", "收费单编号"),
+        "projectNo": FieldLabel("project_no", "案件号"),
+        "salesOrderNo": FieldLabel("sales_order_no", "销售合同号"),
+        "freeRstatus": FieldLabel("free_rstatus", "免单状态"),
+        "customerNameCn": FieldLabel("customer_name_cn", "客户名称"),
+        "personName": FieldLabel("person_name", "负责人"),
+        "testRequirement": FieldLabel("test_requirement", "试验类型"),
+        "departmentName": FieldLabel("department_name", "部门"),
+        "remark": FieldLabel("remark", "备注"),
+        "testItemName": FieldLabel("test_item_name", "测试项目"),
+        "locationName": FieldLabel("location_name", "场地"),
+        "planStartDate": FieldLabel("plan_start_date", "计划开始日期"),
+        "planEndDate": FieldLabel("plan_end_date", "计划结束日期"),
+        "freeDuration": FieldLabel("free_duration", "免单时长(天)"),
+        "freeReason": FieldLabel("free_reason", "免单原因"),
+        "approverName": FieldLabel("approver_name", "审批人"),
+        "applyDate": FieldLabel("apply_date", "申请日期"),
+        "approveDate": FieldLabel("approve_date", "审批日期"),
+    },
+    enum_fields={
+        "free_rstatus": EnumField({1: "有效免单", 2: "拒绝"}),
+    },
+)

@@ -1,0 +1,70 @@
+"""Module config: 采购申请 (PurRequestListAction)"""
+from __future__ import annotations
+from new_mcp_servers.core.config import EnumField, FieldLabel, FilterDef, ModuleConfig
+
+_BASE_PATH = "/PurRequestListAction"
+
+pur_request = ModuleConfig(
+    name="query_purrequestlistaction",
+    display_name="采购申请",
+    description="查询采购申请列表。",
+    endpoint=_BASE_PATH + "/listQuery",
+    scope_endpoints={
+        "default": _BASE_PATH + "/listQuery",
+        "dept": _BASE_PATH + "/listQuery",
+        "home": _BASE_PATH + "/listQueryHome",
+        "subcontract": _BASE_PATH + "/listQuerySubcontract",
+        "subcontract_report": _BASE_PATH + "/listQuerySubcontractReport",
+    },
+    scope_svars={
+        "default": {"show_all": "1"},
+        "dept": {"show_dept": "1"},
+    },
+    extra_params=["include_raw"],
+    filters=[
+        FilterDef("asset_type", "pr.asset_type", "资产类型", "="),
+        FilterDef("bstatus", "pr.bstatus", "状态", "="),
+        FilterDef("department_id", "pr.department_id", "申请部门", "="),
+        FilterDef("end_date", "endDate", "申请日期止", "<=", is_date_range=True),
+        FilterDef("fast_search", "fastSearch", "快速搜索", "like"),
+        FilterDef("manager_category", "managerCategory", "管理类别", "=", enums={1: "一类采购", 2: "二类采购"}),
+        FilterDef("order_no", "pr.order_no", "申请编号", "like"),
+        FilterDef("purchase_category", "pr.purchase_category", "采购类别", "="),
+        FilterDef("purchase_desc", "pr.purchase_desc", "采购内容", "like"),
+        FilterDef("recorder_id", "ap.person_name", "申请人", "like"),
+        FilterDef("source_biz_no", "pr.TXN_CORE_NO", "来源号", "like"),
+        FilterDef("start_date", "startDate", "申请日期起", ">=", is_date_range=True),
+        FilterDef("statistical_date", "statisticalDate", "统计日期", "="),
+        FilterDef("subcontract_items", "pr.purchase_desc", "分包内容", "like"),
+        FilterDef("supplier_name", "prs.supplier_name", "供应商", "like"),
+    ],
+    field_labels={
+        "orderNo": FieldLabel("order_no", "申请编号"),
+        "choseSupplierName": FieldLabel("chose_supplier_name", "拟采购供应商"),
+        "managerCategory": FieldLabel("manager_category", "管理类别"),
+        "orderDate": FieldLabel("order_date", "申请日期"),
+        "cooperationCount": FieldLabel("cooperation_count", "合作次数"),
+        "purchaseNo": FieldLabel("purchase_no", "采购记录编号"),
+        "rstatus": FieldLabel("rstatus", "申请状态"),
+        "cooperationAmtLocal": FieldLabel("cooperation_amt_local", "合作金额"),
+        "personName": FieldLabel("person_name", "申请人"),
+        "thisYearCooperationAmtLocal": FieldLabel("this_year_cooperation_amt_local", "本年合作金额"),
+        "salerName": FieldLabel("saler_name", "负责业务"),
+        "departmentName": FieldLabel("department_name", "申请部门"),
+        "lastYearCooperationAmtLocal": FieldLabel("last_year_cooperation_amt_local", "去年合作金额"),
+        "purchaseCategory": FieldLabel("purchase_category", "采购类别"),
+        "purchaseDesc": FieldLabel("purchase_desc", "采购内容"),
+        "beforeLastYearCooperationAmtLocal": FieldLabel("before_last_year_cooperation_amt_local", "前年合作金额"),
+        "assetType": FieldLabel("asset_type", "资产类型"),
+        "amtLocal": FieldLabel("amt_local", "人民币预计分包费用"),
+        "txnCoreNo": FieldLabel("txn_core_no", "来源号"),
+        "consignorNameCn": FieldLabel("consignor_name_cn", "合同方"),
+        "choseSupplierAmt": FieldLabel("chose_supplier_amt", "未税金额"),
+        "choseSupplierAmtWithTax": FieldLabel("chose_supplier_amt_with_tax", "含税金额"),
+        "remark": FieldLabel("remark", "备注"),
+    },
+    enum_fields={
+        "manager_category": EnumField({1: "一类采购", 2: "二类采购"}),
+        "rstatus": EnumField({0: "已作废", 1: "已审核", 2: "暂存", 3: "等待重新审批", 4: "审批中"}),
+    },
+)
